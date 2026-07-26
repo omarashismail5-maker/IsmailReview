@@ -1,5 +1,7 @@
-def classify_input(draft):
+from review_engine import build_review_prompt
 
+def classify_input(draft):
+    
     draft_lower = draft.lower()
     word_count = len(draft.split())
 
@@ -22,6 +24,10 @@ def classify_input(draft):
     for keyword in activity_keywords:
         if keyword in draft_lower and word_count <= 25:
             return "Activity description"
+    
+    # Essay paragraphs are usually longer, so if we see a long word count, it might be safe to assume it is an essay..
+    if word_count > 40:
+        return "Essay paragraph"
 
     # Short answers are less about experience, and more about why the applicant wants the position.
     short_answer_keywords = [
@@ -32,10 +38,6 @@ def classify_input(draft):
     for keyword in short_answer_keywords:
         if keyword in draft_lower and word_count <= 80:
             return "Short answer"
-
-    # Essay paragraphs are usually longer, so if we see a long word count, it might be safe to assume it is an essay..
-    if word_count > 40:
-        return "Essay paragraph"
 
     # Everything else is something unknown to the model, so we classify all of those under "Unknown"
     return "Unknown"
@@ -234,29 +236,20 @@ def generate_review(draft, input_type):
 
 
 def main():
-    print("Welcome to IsmailReview.")
-    print("Paste a draft below, and IsmailReview will classify it.")
-    print()
+    print("Welcome to IsmailReview!")
 
-    draft = input("Draft: ")
+    draft = input("Enter your draft:\n")
 
+    # First, determine what kind of piece this is
     input_type = classify_input(draft)
-    issues = common_issues(draft)
-    review = generate_review(draft, input_type)
 
-    print()
-    print("You submitted:")
-    print(draft)
-    print()
-    print(f"Input Type: {input_type}")
-    print()
+    print(f"\nDetected Input Type: {input_type}")
 
-    print("Detected Issues:")
-    for issue in issues:
-        print(f"- {issue}")
+    # Then we use that type to construct our response
+    review_prompt = build_review_prompt(draft, input_type)
 
-    print()
-    print(review)
+    print("\nGenerated Review Prompt:\n")
+    print(review_prompt)
 
 
 if __name__ == "__main__":
