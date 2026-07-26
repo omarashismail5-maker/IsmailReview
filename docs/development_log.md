@@ -91,3 +91,60 @@ Detected Issues:
 *rest of the feedback*
 "
 Result: PASS
+
+###
+
+Day 7: 7/26/2026
+
+testBasicCLassification: Tests for recognition of answers that are essays.
+
+Input: "I really like working at my college gym because it is fun and I enjoy helping people."
+
+Expected Output: 
+"
+Detected Input Type: essay
+*rest of the feedback*
+"
+
+Actual Output:
+"
+Detected Input Type: Short answer
+*rest of the feedback*
+"
+Result: FAIL
+
+---
+
+New Input: "Rock climbing initially interested me because it combined physical challenge with problem-solving. Over time, however, injuries forced me to reconsider how I approached the sport. During recovery, I learned patience, proper technique, and the importance of supporting other climbers. Returning to climbing eventually allowed me to develop skills in belaying, rappelling, and rescue procedures while becoming a more responsible member of the climbing community."
+
+Expected Output: 
+"
+Detected Input Type: essay
+*rest of the feedback*
+"
+
+Actual Output:
+"
+Detected Input Type: Short answer
+*rest of the feedback*
+"
+Result: FAIL
+
+---
+
+*Code Updated*
+
+New Input: "Rock climbing initially interested me because it combined physical challenge with problem-solving. Over time, however, injuries forced me to reconsider how I approached the sport. During recovery, I learned patience, proper technique, and the importance of supporting other climbers. Returning to climbing eventually allowed me to develop skills in belaying, rappelling, and rescue procedures while becoming a more responsible member of the climbing community."
+
+Expected Output: 
+"
+Detected Input Type: essay
+*rest of the feedback*
+"
+
+Actual Output:
+"
+Detected Input Type: essay
+*rest of the feedback*
+"
+Result: PASS
