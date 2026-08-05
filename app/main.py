@@ -59,16 +59,16 @@ def common_issues(draft):
         if word in draft_lower:
             issues.append(f"The draft may use vague wording: '{word}'.")
 
-        if word_count < 8:
-            issues.append("The draft may be too short to show meaningful detail.")
+    if word_count < 8:
+        issues.append("The draft may be too short to show meaningful detail.")
 
-        if "impact" not in draft_lower and "improved" not in draft_lower and "developed" not in draft_lower:
-            issues.append("The draft may need a clearer impact, result, or growth statement.")
+    if ("impact" not in draft_lower and "improved" not in draft_lower and "developed" not in draft_lower):
+        issues.append("The draft may need a clearer impact, result, or growth statement.")
 
-        if len(issues) == 0:
-            issues.append("No major basic issues detected by the rule-based checker.")
+    if len(issues) == 0:
+        issues.append("No major basic issues detected by the rule-based checker.")
 
-        return issues
+    return issues
 
 
 # Generates a basic review for the user's draft. It doesn't use AI just
