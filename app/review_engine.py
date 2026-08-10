@@ -11,44 +11,80 @@ REVIEW_SECTIONS = [
 ]
 
 def build_review_prompt(draft: str, input_type: str) -> str:
-    """
-    Build a structured prompt for reviewing a draft.
+    type_guidance = {
+        "Resume bullet": """
+Focus especially on:
+- Strong action verbs
+- Specific responsibilities
+- Measurable impact or results
+- Professional wording
+- Conciseness
+""",
 
-    Args:
-        draft: the user's orginal piece of writing
-        input_type: The category of the piece of work returned by the classifier.
-    
-    Returns:
-        A formatted review prompt.
+        "Activity description": """
+Focus especially on:
+- The writer's role in the activity
+- Skills demonstrated
+- Leadership or initiative
+- Contribution and impact
+- Clear, concise wording
+""",
 
-    Raises:
-        ValueError: If the draft or input type is empty.
-    """
+        "Short answer": """
+Focus especially on:
+- Clear motivation
+- Specific supporting examples
+- Connection between experience and the opportunity
+- Avoiding vague claims
+- Directly answering the question
+""",
 
-    cleaned_draft = draft.strip()
-    cleaned_input_type = input_type.strip()
+        "Essay paragraph": """
+Focus especially on:
+- Storytelling and reflection
+- Specific details
+- Personal voice
+- Growth or significance
+- Sentence flow and clarity
+""",
 
-    if not cleaned_draft:
-        raise ValueError("Draft cannot be empty.")
-    
-    if not cleaned_input_type:
-        raise ValueError("Input type cannot be empty.")
+        "Unknown": """
+Focus on identifying what context or information is missing before making major revisions.
+"""
+    }
 
-    sections = "\n".join(
-        f"{index}. {section}"
-        for index, section in enumerate(REVIEW_SECTIONS, start=1)
+    guidance = type_guidance.get(
+        input_type,
+        type_guidance["Unknown"]
     )
 
-    return (
-        "You are IsmailReview, an application-writing reviewer.\n\n"
-        f"Input Type: {cleaned_input_type}\n\n"
-        "Review the following draft:\n"
-        f'"""\n{cleaned_draft}\n"""\n\n'
-        "Provide feedback using these sections:\n"
-        f"{sections}\n\n"
-        "Give specific, constructive feedback. Preserve the writer's "
-        "meaning and voice when creating the improved version."
-    )
+    prompt = f"""
+You are IsmailReview, an application-writing reviewer.
+
+Input Type: {input_type}
+
+Review this draft:
+\"\"\"
+{draft}
+\"\"\"
+
+{guidance}
+
+Provide feedback using these sections:
+1. Overall Impression
+2. Strengths
+3. Weaknesses
+4. Why It Matters
+5. Suggested Improvements
+6. Improved Version
+7. Score
+
+Give specific, constructive feedback.
+Preserve the writer's meaning and voice when creating the improved version.
+"""
+
+    return prompt
+    
 
 if __name__ == "__main__":
     sample_draft = (
@@ -56,5 +92,5 @@ if __name__ == "__main__":
         "and I enjoy helping people."
     )
 
-    prompt = build_review_prompt(sample_draft, "essay")
+    prompt = build_review_prompt(sample_draft, "Essay paragraph")
     print(prompt)
