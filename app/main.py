@@ -1,4 +1,5 @@
 from review_engine import build_review_prompt
+from llm_client import generate_ai_review
 
 def classify_input(draft):
     
@@ -245,12 +246,15 @@ def main():
 
     print(f"\nDetected Input Type: {input_type}")
 
-    # Then we use that type to construct our response
+    # Use the detected input type to construct the review prompt
     review_prompt = build_review_prompt(draft, input_type)
 
-    print("\nGenerated Review Prompt:\n")
-    print(review_prompt)
+    # Then we send it to our LLM
+    print("\nGenerating AI Review...\n")
+    ai_review = generate_ai_review(review_prompt)
 
+    # And display the feedback
+    print(ai_review)
 
 if __name__ == "__main__":
     main()
