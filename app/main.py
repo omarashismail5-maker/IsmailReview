@@ -1,5 +1,6 @@
 from review_engine import build_review_prompt
 from llm_client import generate_ai_review
+import json
 
 def classify_input(draft):
     
@@ -254,7 +255,35 @@ def main():
     ai_review = generate_ai_review(review_prompt)
 
     # And display the feedback
-    print(ai_review)
+    try:
+        review = json.loads(ai_review)
+
+        print("\nOverall Impression:")
+        print(review["overall_impression"])
+
+        print("\nStrengths:")
+        for strength in review["strengths"]:
+            print(f"- {strength}")
+
+        print("\nWeaknesses:")
+        for weakness in review["weaknesses"]:
+            print(f"- {weakness}")
+
+        print("\nWhy It Matters:")
+        print(review["why_it_matters"])
+
+        print("\nSuggested Improvements:")
+        for improvement in review["suggested_improvements"]:
+            print(f"- {improvement}")
+
+        print("\nImproved Version:")
+        print(review["improved_version"])
+
+        print("\nScore:")
+        print(f'{review["score"]}/10')
+
+    except json.JSONDecodeError:
+        print(ai_review)
 
 if __name__ == "__main__":
     main()

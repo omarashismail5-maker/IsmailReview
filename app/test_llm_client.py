@@ -21,7 +21,7 @@ def test_rate_limit_error(monkeypatch):
         pass
 
     class FakeResponses:
-        def create(self, model, input):
+        def create(self, model, input, **kwargs):
             raise FakeRateLimitError()
 
     class FakeOpenAI:
@@ -42,7 +42,7 @@ def test_api_connection_error(monkeypatch):
         pass
 
     class FakeResponses:
-        def create(self, model, input):
+        def create(self, model, input, **kwargs):
             raise FakeConnectionError()
 
     class FakeOpenAI:
