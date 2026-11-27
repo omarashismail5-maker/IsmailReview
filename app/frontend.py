@@ -92,18 +92,28 @@ if uploaded_resume is not None:
 
         with st.expander("Preview Extracted Resume Text"):
             st.text(resume_text)
-
+            
         if st.button("Review Full Resume"):
+
+            # Clear previous feedback.
+            st.session_state["resume_review"] = None
+
             review_prompt = build_full_resume_prompt(resume_text)
 
-            with st.spinner("Analyzing your resume..."):
-                ai_review = generate_ai_review(review_prompt)
-
             try:
+                with st.spinner("Analyzing your resume..."):
+                    ai_review = generate_ai_review(review_prompt)
+
                 st.session_state["resume_review"] = json.loads(ai_review)
 
             except json.JSONDecodeError:
                 st.error(ai_review)
+
+            except Exception:
+                st.error(
+                    "The resume was uploaded successfully, "
+                    "but AI analysis failed. Please try again."
+                )
 
         # Display the saved analysis independently of the button.
         if st.session_state["resume_review"] is not None:
