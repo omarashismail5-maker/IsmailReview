@@ -9,12 +9,14 @@ def test_resume_bullet():
 
     assert draft in prompt
     assert input_type in prompt
+    assert "strong action verbs" in prompt.lower()
     assert "Overall Impression" in prompt
     assert "Strengths" in prompt
     assert "Weaknesses" in prompt
     assert "Suggested Improvements" in prompt
     assert "Improved Version" in prompt
     assert "Score" in prompt
+    
 
 # Tests whether build_review_prompt correctly handles an activity description.
 def test_activity_description():
@@ -25,6 +27,7 @@ def test_activity_description():
 
     assert draft in prompt
     assert input_type in prompt
+    assert "leadership or initiative" in prompt.lower()
 
 
 # Tests whether build_review_prompt correctly handles a short answer.
@@ -36,6 +39,7 @@ def test_short_answer():
 
     assert draft in prompt
     assert input_type in prompt
+    assert "clear motivation" in prompt.lower()
 
 # Tests whether build_review_prompt correctly handles an essay paragraph.
 def test_essay_paragraph():
@@ -46,6 +50,7 @@ def test_essay_paragraph():
 
     assert draft in prompt
     assert input_type in prompt
+    assert "storytelling and reflection" in prompt.lower()
 
 
 # Tests whether build_review_prompt correctly handles unknown input.
@@ -57,6 +62,7 @@ def test_unknown():
 
     assert draft in prompt
     assert input_type in prompt
+    assert "context or information is missing" in prompt.lower()
 
 # Tests to make sure the review prompt stucture is accurate
 def test_review_prompt_structure():
