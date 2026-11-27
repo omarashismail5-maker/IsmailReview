@@ -1,4 +1,4 @@
-from review_engine import build_review_prompt
+from review_engine import build_review_prompt, build_full_resume_prompt
 
 # Tests whether build_review_prompt correctly handles a resume bullet.
 def test_resume_bullet():
@@ -85,3 +85,31 @@ def test_review_prompt_structure():
         assert section in prompt
 
     assert "Preserve the writer's meaning and voice" in prompt
+
+def test_full_resume_prompt():
+
+    # Create a fictional resume.
+    resume = """
+    Jane Doe
+    B.S. Computer Science
+    Software Engineering Intern
+    Developed Python applications.
+    """
+
+    # Generate the full-resume prompt.
+    prompt = build_full_resume_prompt(resume)
+
+    # Verify that the resume is included.
+    assert resume.strip() in prompt
+
+    # Verify that the prompt evaluates a complete resume.
+    assert "complete document" in prompt.lower()
+
+    # Verify that important feedback categories are included.
+    assert "strengths" in prompt
+    assert "weaknesses" in prompt
+    assert "suggested_improvements" in prompt
+    assert "score" in prompt
+
+    # Verify that the model cannot invent qualifications.
+    assert "do not invent" in prompt.lower()
