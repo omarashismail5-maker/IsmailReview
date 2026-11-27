@@ -9,6 +9,14 @@ from resume_parser import extract_resume_text
 
 def clear_draft():
     st.session_state["draft_input"] = ""
+    st.session_state["review"] = None
+    st.session_state["review_type"] = None
+    st.session_state["improved_version_input"] = ""
+
+def clear_writing_review():
+    st.session_state["review"] = None
+    st.session_state["review_type"] = None
+    st.session_state["improved_version_input"] = ""
 
 st.set_page_config(
     page_title="IsmailReview",
@@ -147,7 +155,8 @@ draft = st.text_area(
     "Enter your draft:",
     height=250,
     placeholder="Paste your application writing here...",
-    key="draft_input"
+    key="draft_input",
+    on_change=clear_writing_review
 )
 
 
@@ -157,10 +166,10 @@ if st.button("Review"):
         st.warning("Please enter a draft before requesting a review.")
 
     else:
-        # Determine what kind of writing the user submitted.
+        # Classify the writing.
         input_type = classify_input(draft)
 
-        # Build the appropriate type-specific review prompt.
+        # Generate the appropriate prompt.
         review_prompt = build_review_prompt(draft, input_type)
 
         # Send the prompt to the LLM.
@@ -170,52 +179,54 @@ if st.button("Review"):
         try:
             review = json.loads(ai_review)
 
-            # Save the review so it remains available after reruns.
+            # Save the results in session state.
             st.session_state["review"] = review
             st.session_state["review_type"] = input_type
             st.session_state["improved_version_input"] = review["improved_version"]
-            type_col, score_col = st.columns(2)
-
-            with type_col:
-                st.metric(
-                    label="Detected Type",
-                    value=input_type
-                )
-
-            with score_col:
-                st.metric(
-                    label="Current Score",
-                    value=f'{review["score"]}/10'
-                )
-
-            st.subheader("Overall Impression")
-            st.write(review["overall_impression"])
-
-            st.subheader("Strengths")
-            for strength in review["strengths"]:
-                st.write(f"- {strength}")
-
-            st.subheader("Weaknesses")
-            for weakness in review["weaknesses"]:
-                st.write(f"- {weakness}")
-
-            st.subheader("Why It Matters")
-            st.write(review["why_it_matters"])
-
-            st.subheader("Suggested Improvements")
-            for improvement in review["suggested_improvements"]:
-                st.write(f"- {improvement}")
-
-            st.subheader("Improved Version")
-
-            st.text_area(
-                "Copy or edit the improved version:",
-                value=review["improved_version"],
-                height=180
-            )
 
         except json.JSONDecodeError:
             st.error(ai_review)
+
+
+# Display saved feedback independently of the Review button.
+if st.session_state["review"] is not None:
+
+    review = st.session_state["review"]
+    input_type = st.session_state["review_type"]
+
+    type_col, score_col = st.columns(2)
+
+    with type_col:
+        st.metric("Detected Type", input_type)
+
+    with score_col:
+        st.metric("Current Score", f'{review["score"]}/10')
+
+    st.subheader("Overall Impression")
+    st.write(review["overall_impression"])
+
+    st.subheader("Strengths")
+    for strength in review["strengths"]:
+        st.write(f"- {strength}")
+
+    st.subheader("Weaknesses")
+    for weakness in review["weaknesses"]:
+        st.write(f"- {weakness}")
+
+    st.subheader("Why It Matters")
+    st.write(review["why_it_matters"])
+
+    st.subheader("Suggested Improvements")
+    for improvement in review["suggested_improvements"]:
+        st.write(f"- {improvement}")
+
+    st.subheader("Improved Version")
+
+    st.text_area(
+        "Copy or edit the improved version:",
+        height=180,
+        key="improved_version_input"
+    )
 
 st.button(
     "Clear Draft",
