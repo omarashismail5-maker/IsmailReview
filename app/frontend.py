@@ -78,10 +78,12 @@ if uploaded_resume is not None:
     if current_hash != st.session_state["resume_file_hash"]:
         st.session_state["resume_review"] = None
         st.session_state["resume_file_hash"] = current_hash
+        st.session_state["resume_consent"] = False
 
 else:
     st.session_state["resume_review"] = None
     st.session_state["resume_file_hash"] = None
+    st.session_state["resume_consent"] = False
 
 if uploaded_resume is not None:
     try:
@@ -92,8 +94,22 @@ if uploaded_resume is not None:
 
         with st.expander("Preview Extracted Resume Text"):
             st.text(resume_text)
+        
+        st.caption(
+            "Privacy Notice: Reviewing your resume sends its "
+            "extracted text to the OpenAI API for analysis. "
+            "Avoid uploading highly sensitive information."
+        )
+
+        consent = st.checkbox(
+            "I understand and agree to have my resume analyzed by AI.",
+            key="resume_consent"
+        )
+
+        if not consent:
+            st.session_state["resume_review"] = None
             
-        if st.button("Review Full Resume"):
+        if st.button("Review Full Resume", disabled=not consent):
 
             # Clear previous feedback.
             st.session_state["resume_review"] = None
