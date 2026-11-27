@@ -86,10 +86,12 @@ if uploaded_resume is not None:
     if current_hash != st.session_state["resume_file_hash"]:
         st.session_state["resume_review"] = None
         st.session_state["resume_file_hash"] = current_hash
+        st.session_state["resume_consent"] = False
 
 else:
     st.session_state["resume_review"] = None
     st.session_state["resume_file_hash"] = None
+    st.session_state["resume_consent"] = False
 
 if uploaded_resume is not None:
     try:
@@ -100,18 +102,42 @@ if uploaded_resume is not None:
 
         with st.expander("Preview Extracted Resume Text"):
             st.text(resume_text)
+        
+        st.caption(
+            "Privacy Notice: Reviewing your resume sends its "
+            "extracted text to the OpenAI API for analysis. "
+            "Avoid uploading highly sensitive information."
+        )
 
-        if st.button("Review Full Resume"):
+        consent = st.checkbox(
+            "I understand and agree to have my resume analyzed by AI.",
+            key="resume_consent"
+        )
+
+        if not consent:
+            st.session_state["resume_review"] = None
+            
+        if st.button("Review Full Resume", disabled=not consent):
+
+            # Clear previous feedback.
+            st.session_state["resume_review"] = None
+
             review_prompt = build_full_resume_prompt(resume_text)
 
-            with st.spinner("Analyzing your resume..."):
-                ai_review = generate_ai_review(review_prompt)
-
             try:
+                with st.spinner("Analyzing your resume..."):
+                    ai_review = generate_ai_review(review_prompt)
+
                 st.session_state["resume_review"] = json.loads(ai_review)
 
             except json.JSONDecodeError:
                 st.error(ai_review)
+
+            except Exception:
+                st.error(
+                    "The resume was uploaded successfully, "
+                    "but AI analysis failed. Please try again."
+                )
 
         # Display the saved analysis independently of the button.
         if st.session_state["resume_review"] is not None:

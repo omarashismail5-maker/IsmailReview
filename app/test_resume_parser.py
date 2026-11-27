@@ -76,3 +76,24 @@ def test_unsupported_file():
 
     with pytest.raises(ValueError, match="Unsupported file format"):
         extract_resume_text(uploaded_file)
+        
+def test_corrupted_pdf():
+
+    # Simulate an invalid PDF file.
+    uploaded_file = BytesIO(b"This is not a valid PDF")
+    uploaded_file.name = "corrupted.pdf"
+
+    # Verify that the parser returns a helpful error.
+    with pytest.raises(ValueError, match="This PDF could not be opened"):
+        extract_resume_text(uploaded_file)
+
+
+def test_corrupted_docx():
+
+    # Simulate an invalid Word document.
+    uploaded_file = BytesIO(b"This is not a valid Word document")
+    uploaded_file.name = "corrupted.docx"
+
+    # Verify that the parser returns a helpful error.
+    with pytest.raises(ValueError, match="This Word document could not be opened"):
+        extract_resume_text(uploaded_file)
